@@ -1,1 +1,487 @@
 
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f0f1a">
+<title>🌟 Meri Life Tracker</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f0f1a;color:#e2e8f0;min-height:100vh;padding-bottom:40px}
+.header{background:linear-gradient(135deg,#1e1b4b 0%,#0f172a 100%);padding:18px 16px 0;border-bottom:1px solid #1e293b;position:sticky;top:0;z-index:100}
+h1{font-size:20px;font-weight:700;color:#a5b4fc}
+.subtitle{font-size:12px;color:#64748b;margin:2px 0 12px}
+.tabs{display:flex;gap:3px}
+.tab{flex:1;padding:10px 2px;border:none;cursor:pointer;font-size:11px;font-weight:600;border-radius:8px 8px 0 0;background:transparent;color:#64748b;border-bottom:2px solid transparent;transition:all .2s}
+.tab.active{background:#1e293b;color:#a5b4fc;border-bottom:2px solid #6366f1}
+.content{max-width:480px;margin:0 auto;padding:12px}
+.card{background:#1e293b;border-radius:14px;padding:14px;margin-bottom:10px;border:1px solid #334155}
+.card h3{font-size:14px;font-weight:700;color:#94a3b8;margin-bottom:12px}
+.card h4{font-size:13px;font-weight:600;color:#94a3b8;margin-bottom:8px}
+input[type=number],input[type=text],input[type=date]{background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:8px 10px;border-radius:8px;font-size:14px;outline:none;width:100%;font-family:inherit}
+input::placeholder{color:#475569}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+label.lbl{font-size:11px;color:#64748b;display:block;margin-bottom:3px}
+.add-btn{background:#6366f1;color:white;border:none;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:20px;font-weight:700;line-height:1;flex-shrink:0}
+.flex-row{display:flex;gap:8px;align-items:center}
+.mood-btn{font-size:26px;background:none;border:2px solid transparent;border-radius:12px;padding:4px 6px;cursor:pointer;transition:all .2s}
+.mood-btn.selected{border-color:#6366f1;transform:scale(1.2)}
+.mood-row{display:flex;justify-content:space-between}
+.mood-label{text-align:center;font-size:12px;color:#94a3b8;margin-top:6px}
+.task-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #0f172a}
+.task-check{width:22px;height:22px;border-radius:6px;border:2px solid #334155;background:transparent;color:white;cursor:pointer;font-size:12px;flex-shrink:0}
+.task-check.done{border-color:#10b981;background:#10b981}
+.task-text{flex:1;font-size:14px}
+.task-text.done{text-decoration:line-through;color:#475569}
+.del-btn{background:none;border:none;color:#475569;cursor:pointer;font-size:18px;padding:0 4px}
+.goal-item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#0f172a;border-radius:8px;margin-bottom:6px;cursor:pointer;border:1px solid #334155}
+.goal-item.done{background:#0f2a1e;border-color:#10b981}
+.goal-text{flex:1;font-size:13px;color:#cbd5e1}
+.goal-text.done{text-decoration:line-through;color:#10b981}
+.badge{display:inline-block;border-radius:6px;padding:2px 7px;font-size:12px;font-weight:500;background:#33415522;color:#94a3b8;border:1px solid #33415544;margin:2px}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sum-badge{background:#0f172a;border-radius:10px;padding:10px}
+.sum-icon{font-size:18px;margin-bottom:2px}
+.sum-label{font-size:11px;color:#64748b}
+.sum-value{font-size:15px;font-weight:700}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.stat-card{background:#1e293b;border-radius:12px;padding:12px;border:1px solid #334155;text-align:center}
+.stat-icon{font-size:20px}
+.stat-value{font-size:17px;font-weight:700;color:#e2e8f0;margin:3px 0 2px}
+.stat-label{font-size:11px;color:#64748b}
+.toggle-row{display:flex;background:#1e293b;border-radius:10px;padding:4px;margin-bottom:12px}
+.toggle-btn{flex:1;padding:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;border-radius:8px;background:transparent;color:#64748b;transition:all .2s}
+.toggle-btn.active{background:#6366f1;color:white}
+.hist-card{background:#1e293b;border-radius:12px;padding:12px 14px;margin-bottom:10px;border:1px solid #334155}
+.hist-card.today-card{border-color:#6366f1}
+.hist-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.progress-bar-bg{background:#0f172a;border-radius:6px;height:8px;overflow:hidden;margin:4px 0}
+.progress-bar-fill{height:100%;border-radius:6px;transition:width .4s}
+.streak-card{background:linear-gradient(135deg,#1e1b4b,#0f172a);border-radius:14px;padding:16px;border:1px solid #6366f1;text-align:center;margin-top:12px}
+.date-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.today-btn{padding:6px 10px;background:#6366f1;color:white;border:none;border-radius:8px;cursor:pointer;font-size:12px}
+.hidden{display:none}
+.tip{font-size:11px;color:#64748b;text-align:center;margin-top:6px}
+.chart-container{width:100%;margin-top:6px;overflow-x:auto}
+svg text{font-family:'Segoe UI',system-ui,sans-serif}
+.empty-msg{color:#475569;font-size:13px;text-align:center;padding:10px 0}
+.task-count{margin:6px 0 0;font-size:12px;color:#64748b;text-align:right}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🌟 Meri Life Tracker</h1>
+  <p class="subtitle">Apni daily progress track karo</p>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('today')">📝 Aaj</button>
+    <button class="tab" onclick="switchTab('history')">📅 History</button>
+    <button class="tab" onclick="switchTab('analytics')">📊 Analytics</button>
+  </div>
+</div>
+
+<div class="content">
+<!-- TODAY TAB -->
+<div id="tab-today">
+  <div class="date-row">
+    <span style="font-size:13px;color:#94a3b8">Date:</span>
+    <input type="date" id="viewDate" style="flex:1" onchange="onDateChange()">
+    <button class="today-btn hidden" id="todayBtn" onclick="goToday()">Aaj</button>
+  </div>
+  <div class="card">
+    <h3>😊 Mood</h3>
+    <div class="mood-row" id="moodRow"></div>
+    <p class="mood-label" id="moodLabel"></p>
+  </div>
+  <div class="card">
+    <h3>💸 Aaj Ka Kharcha</h3>
+    <div style="position:relative">
+      <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:14px">₹</span>
+      <input type="number" id="expense" placeholder="0" oninput="save('expense',this.value)" style="padding-left:26px">
+    </div>
+    <input type="text" id="expenseNote" placeholder="Kya kharcha kiya? (Khana, Books...)" oninput="save('expenseNote',this.value)" style="margin-top:8px">
+  </div>
+  <div class="card">
+    <h3>⏱️ Time Tracking</h3>
+    <div class="grid3">
+      <div><label class="lbl">📚 Padhai (h)</label><input type="number" id="studyHours" min="0" max="24" step="0.5" placeholder="0" oninput="save('studyHours',this.value)"></div>
+      <div><label class="lbl">💪 Workout (h)</label><input type="number" id="workoutHours" min="0" max="24" step="0.5" placeholder="0" oninput="save('workoutHours',this.value)"></div>
+      <div><label class="lbl">😴 Neend (h)</label><input type="number" id="sleepHours" min="0" max="24" step="0.5" placeholder="0" oninput="save('sleepHours',this.value)"></div>
+    </div>
+    <div style="margin-top:8px"><label class="lbl">💧 Paani (glasses)</label><input type="number" id="water" min="0" max="30" step="1" placeholder="0" oninput="save('water',this.value)"></div>
+  </div>
+  <div class="card">
+    <h3>📱 Phone Screen Time</h3>
+    <div class="grid2">
+      <div><label class="lbl">📱 Screen time (hrs)</label><input type="number" id="screenTime" min="0" max="24" step="0.5" placeholder="0" oninput="save('screenTime',this.value);renderScreenBar()"></div>
+      <div><label class="lbl">🎯 Daily limit (hrs)</label><input type="number" id="screenTimeLimit" min="0" max="24" step="0.5" placeholder="e.g. 2" oninput="save('screenTimeLimit',this.value);renderScreenBar()"></div>
+    </div>
+    <div id="screenBar"></div>
+  </div>
+  <div class="card">
+    <h3>✅ Aaj Ke Tasks</h3>
+    <div class="flex-row" style="margin-bottom:12px">
+      <input type="text" id="taskInput" placeholder="Naya task likho..." onkeydown="if(event.key==='Enter')addTask()">
+      <button class="add-btn" onclick="addTask()">+</button>
+    </div>
+    <div id="taskList"></div>
+    <p class="task-count" id="taskCount"></p>
+  </div>
+  <div class="card">
+    <h3>🎯 Goals</h3>
+    <div class="flex-row" style="margin-bottom:12px">
+      <input type="text" id="goalInput" placeholder="Goal likho..." onkeydown="if(event.key==='Enter')addGoal()">
+      <button class="add-btn" onclick="addGoal()">+</button>
+    </div>
+    <div id="goalList"></div>
+  </div>
+  <div class="card">
+    <h3>📋 Aaj Ka Summary</h3>
+    <div class="summary-grid" id="summaryGrid"></div>
+  </div>
+</div>
+
+<!-- HISTORY TAB -->
+<div id="tab-history" class="hidden">
+  <h3 style="color:#94a3b8;font-size:14px;margin-bottom:12px">Pichhle 7 din ka record</h3>
+  <div id="historyList"></div>
+</div>
+
+<!-- ANALYTICS TAB -->
+<div id="tab-analytics" class="hidden">
+  <div class="stat-grid" id="statsGrid"></div>
+  <div class="toggle-row">
+    <button class="toggle-btn active" id="btnWeekly" onclick="setAnalyticsView('weekly')">📅 Weekly</button>
+    <button class="toggle-btn" id="btnMonthly" onclick="setAnalyticsView('monthly')">📆 Monthly</button>
+  </div>
+  <div class="card"><h4>💸 Kharcha (₹)</h4><div class="chart-container" id="chartExpense"></div></div>
+  <div class="card"><h4>⏱️ Padhai vs Workout (hrs)</h4><div class="chart-container" id="chartStudy"></div></div>
+  <div class="card"><h4>😴 Avg Neend (hrs)</h4><div class="chart-container" id="chartSleep"></div></div>
+  <div class="card"><h4>😊 Mood Trend</h4><div class="chart-container" id="chartMood"></div></div>
+  <div class="card"><h4>📱 Screen Time (hrs/day)</h4><div class="chart-container" id="chartScreen"></div><p class="tip">💡 2h se kam screen time ideal hai</p></div>
+  <div class="streak-card" id="streakCard"></div>
+</div>
+</div>
+
+<script>
+const SK='life_v3';
+const MOODS=['😞','😕','😐','🙂','😄'];
+const MOOD_LABELS=['Bahut bura','Bura','Theek','Accha','Bahut accha'];
+const COLORS=['#6366f1','#22d3ee','#f59e0b','#10b981','#f43f5e','#a78bfa','#f472b6'];
+
+let allData={}, currentDate=getTodayKey(), analyticsView='weekly';
+
+function getTodayKey(){return new Date().toISOString().split('T')[0];}
+function loadAll(){try{const r=localStorage.getItem(SK);return r?JSON.parse(r):{}}catch(e){return {}}}
+function saveAll(){localStorage.setItem(SK,JSON.stringify(allData));}
+function emptyDay(){return {expense:'',expenseNote:'',studyHours:'',workoutHours:'',sleepHours:'',screenTime:'',screenTimeLimit:'',mood:3,tasks:[],goals:[],water:''};}
+function getDay(k){return allData[k]||emptyDay();}
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function save(f,v){
+  if(!allData[currentDate])allData[currentDate]=emptyDay();
+  allData[currentDate][f]=v;
+  saveAll();renderSummary();
+}
+
+function switchTab(t){
+  ['today','history','analytics'].forEach((x,i)=>{
+    document.getElementById('tab-'+x).classList.toggle('hidden',x!==t);
+    document.querySelectorAll('.tab')[i].classList.toggle('active',x===t);
+  });
+  if(t==='history')renderHistory();
+  if(t==='analytics')renderAnalytics();
+}
+
+function onDateChange(){
+  currentDate=document.getElementById('viewDate').value;
+  document.getElementById('todayBtn').classList.toggle('hidden',currentDate===getTodayKey());
+  renderTodayTab();
+}
+function goToday(){
+  currentDate=getTodayKey();
+  document.getElementById('viewDate').value=currentDate;
+  document.getElementById('todayBtn').classList.add('hidden');
+  renderTodayTab();
+}
+
+function renderMoods(){
+  const day=getDay(currentDate);
+  document.getElementById('moodRow').innerHTML=MOODS.map((m,i)=>`<button class="mood-btn ${day.mood===i+1?'selected':''}" onclick="setMood(${i+1})">${m}</button>`).join('');
+  document.getElementById('moodLabel').textContent=MOOD_LABELS[(day.mood||3)-1];
+}
+function setMood(v){save('mood',v);renderMoods();}
+
+function renderTasks(){
+  const tasks=getDay(currentDate).tasks||[];
+  const list=document.getElementById('taskList');
+  if(!tasks.length){list.innerHTML='<p class="empty-msg">Koi task nahi — add karo!</p>';document.getElementById('taskCount').textContent='';return;}
+  list.innerHTML=tasks.map(t=>`<div class="task-row">
+    <button class="task-check ${t.done?'done':''}" onclick="toggleTask(${t.id})">${t.done?'✓':''}</button>
+    <span class="task-text ${t.done?'done':''}">${esc(t.text)}</span>
+    <button class="del-btn" onclick="deleteTask(${t.id})">×</button>
+  </div>`).join('');
+  const done=tasks.filter(t=>t.done).length;
+  document.getElementById('taskCount').textContent=`${done}/${tasks.length} complete`;
+}
+function addTask(){
+  const inp=document.getElementById('taskInput'),text=inp.value.trim();
+  if(!text)return;
+  if(!allData[currentDate])allData[currentDate]=emptyDay();
+  allData[currentDate].tasks=[...(allData[currentDate].tasks||[]),{text,done:false,id:Date.now()}];
+  saveAll();inp.value='';renderTasks();
+}
+function toggleTask(id){
+  if(!allData[currentDate])return;
+  allData[currentDate].tasks=allData[currentDate].tasks.map(t=>t.id===id?{...t,done:!t.done}:t);
+  saveAll();renderTasks();renderSummary();
+}
+function deleteTask(id){
+  if(!allData[currentDate])return;
+  allData[currentDate].tasks=allData[currentDate].tasks.filter(t=>t.id!==id);
+  saveAll();renderTasks();renderSummary();
+}
+
+function renderGoals(){
+  const goals=getDay(currentDate).goals||[];
+  const list=document.getElementById('goalList');
+  if(!goals.length){list.innerHTML='<p class="empty-msg">Koi goal set nahi!</p>';return;}
+  list.innerHTML=goals.map(g=>`<div class="goal-item ${g.done?'done':''}" onclick="toggleGoal(${g.id})">
+    <span style="font-size:16px">${g.done?'🏆':'🎯'}</span>
+    <span class="goal-text ${g.done?'done':''}">${esc(g.text)}</span>
+  </div>`).join('');
+}
+function addGoal(){
+  const inp=document.getElementById('goalInput'),text=inp.value.trim();
+  if(!text)return;
+  if(!allData[currentDate])allData[currentDate]=emptyDay();
+  allData[currentDate].goals=[...(allData[currentDate].goals||[]),{text,done:false,id:Date.now()}];
+  saveAll();inp.value='';renderGoals();
+}
+function toggleGoal(id){
+  if(!allData[currentDate])return;
+  allData[currentDate].goals=allData[currentDate].goals.map(g=>g.id===id?{...g,done:!g.done}:g);
+  saveAll();renderGoals();
+}
+
+function renderScreenBar(){
+  const day=getDay(currentDate);
+  const used=parseFloat(day.screenTime)||0,limit=parseFloat(day.screenTimeLimit)||0;
+  const bar=document.getElementById('screenBar');
+  if(!used||!limit){bar.innerHTML='';return;}
+  const pct=Math.min((used/limit)*100,100),over=used>limit;
+  const color=over?'#f43f5e':pct>70?'#f59e0b':'#10b981';
+  bar.innerHTML=`<div style="margin-top:10px">
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:#94a3b8;margin-bottom:4px">
+      <span>${over?'⚠️ Limit cross!':Math.round(pct)+'% use ki'}</span>
+      <span style="color:${color}">${used}h / ${limit}h</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+    ${over?'<p style="font-size:11px;color:#f43f5e;margin-top:4px">Phone rakho, productive bano! 😤</p>':pct<50?'<p style="font-size:11px;color:#10b981;margin-top:4px">Screen time kam hai, great job! 🎉</p>':''}
+  </div>`;
+}
+
+function renderSummary(){
+  const day=getDay(currentDate);
+  const items=[
+    {icon:'💸',label:'Kharcha',value:'₹'+(day.expense||0),color:'#f59e0b'},
+    {icon:'📚',label:'Padhai',value:(day.studyHours||0)+'h',color:'#6366f1'},
+    {icon:'💪',label:'Workout',value:(day.workoutHours||0)+'h',color:'#22d3ee'},
+    {icon:'😴',label:'Neend',value:(day.sleepHours||0)+'h',color:'#a78bfa'},
+    {icon:'📱',label:'Screen',value:(day.screenTime||0)+'h',color:'#f43f5e'},
+    {icon:'💧',label:'Paani',value:(day.water||0)+' g',color:'#38bdf8'},
+    {icon:'😊',label:'Mood',value:MOODS[(day.mood||3)-1],color:'#f472b6'},
+  ];
+  document.getElementById('summaryGrid').innerHTML=items.map(i=>`<div class="sum-badge" style="border:1px solid ${i.color}30">
+    <div class="sum-icon">${i.icon}</div><div class="sum-label">${i.label}</div>
+    <div class="sum-value" style="color:${i.color}">${i.value}</div>
+  </div>`).join('');
+}
+
+function renderTodayTab(){
+  const day=getDay(currentDate);
+  ['expense','expenseNote','studyHours','workoutHours','sleepHours','screenTime','screenTimeLimit','water'].forEach(f=>{
+    const el=document.getElementById(f);if(el)el.value=day[f]||'';
+  });
+  renderMoods();renderTasks();renderGoals();renderScreenBar();renderSummary();
+}
+
+function renderHistory(){
+  const todayKey=getTodayKey();let html='';
+  for(let i=6;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const key=d.toISOString().split('T')[0],day=getDay(key);
+    const tasks=day.tasks||[],done=tasks.filter(t=>t.done).length;
+    const hasData=day.expense||day.studyHours||day.workoutHours||day.sleepHours;
+    const tags=[];
+    if(day.expense)tags.push(`<span class="badge">💸 ₹${day.expense}</span>`);
+    if(day.studyHours)tags.push(`<span class="badge">📚 ${day.studyHours}h</span>`);
+    if(day.workoutHours)tags.push(`<span class="badge">💪 ${day.workoutHours}h</span>`);
+    if(day.sleepHours)tags.push(`<span class="badge">😴 ${day.sleepHours}h</span>`);
+    if(day.screenTime)tags.push(`<span class="badge" style="color:#f43f5e">📱 ${day.screenTime}h</span>`);
+    if(tasks.length)tags.push(`<span class="badge" style="color:${done===tasks.length?'#10b981':'#f59e0b'}">✅ ${done}/${tasks.length}</span>`);
+    html+=`<div class="hist-card ${key===todayKey?'today-card':''}" style="opacity:${hasData?1:0.5}">
+      <div class="hist-top">
+        <span style="font-size:13px;font-weight:600;color:${key===todayKey?'#a5b4fc':'#94a3b8'}">${key===todayKey?'🔵 Aaj':key}</span>
+        <span style="font-size:18px">${MOODS[(day.mood||3)-1]}</span>
+      </div>
+      ${hasData?`<div>${tags.join('')}</div>`:'<p style="font-size:12px;color:#475569">Data nahi fill kiya</p>'}
+    </div>`;
+  }
+  document.getElementById('historyList').innerHTML=html;
+}
+
+// ---- SVG CHARTS (no library needed) ----
+function makeSVGBar(data,color,h=160,max){
+  const W=Math.max(300,data.length*60),H=h,pad=30,bw=30,gap=(W-pad*2-bw*data.length)/(data.length+1);
+  const mx=max||Math.max(...data.map(d=>parseFloat(d.v)||0),1);
+  let bars='',labels='',vals='';
+  data.forEach((d,i)=>{
+    const x=pad+gap*(i+1)+bw*i,val=parseFloat(d.v)||0,bh=Math.round((val/mx)*(H-50));
+    const y=H-20-bh;
+    const c=Array.isArray(color)?color[i%color.length]:color;
+    bars+=`<rect x="${x}" y="${y}" width="${bw}" height="${bh}" fill="${c}" rx="4"/>`;
+    labels+=`<text x="${x+bw/2}" y="${H-4}" text-anchor="middle" fill="#64748b" font-size="10">${esc(d.l)}</text>`;
+    if(val>0)vals+=`<text x="${x+bw/2}" y="${y-3}" text-anchor="middle" fill="#94a3b8" font-size="9">${val}</text>`;
+  });
+  return `<svg width="${W}" height="${H}" style="display:block">${bars}${labels}${vals}</svg>`;
+}
+
+function makeSVGLine(data,color,h=150,min,max){
+  const W=Math.max(300,data.length*60),H=h,pad=30;
+  const vals=data.map(d=>parseFloat(d.v)||0);
+  const mx=max||Math.max(...vals,1),mn=min||0;
+  const pts=data.map((d,i)=>{
+    const x=pad+(i/(data.length-1||1))*(W-pad*2)+pad/2;
+    const y=H-20-((parseFloat(d.v)||0)-mn)/(mx-mn||1)*(H-40);
+    return {x,y,l:d.l,v:d.v};
+  });
+  const path=pts.map((p,i)=>(i===0?`M${p.x},${p.y}`:`L${p.x},${p.y}`)).join(' ');
+  const area=`M${pts[0].x},${H-20} `+pts.map(p=>`L${p.x},${p.y}`).join(' ')+` L${pts[pts.length-1].x},${H-20} Z`;
+  let circles='',labels='';
+  pts.forEach(p=>{
+    circles+=`<circle cx="${p.x}" cy="${p.y}" r="4" fill="${color}"/>`;
+    labels+=`<text x="${p.x}" y="${H-4}" text-anchor="middle" fill="#64748b" font-size="10">${esc(p.l)}</text>`;
+  });
+  return `<svg width="${W}" height="${H}" style="display:block">
+    <path d="${area}" fill="${color}22"/>
+    <path d="${path}" stroke="${color}" stroke-width="2" fill="none"/>
+    ${circles}${labels}
+  </svg>`;
+}
+
+function makeSVGDoubleBar(data,c1,c2,l1,l2,h=160){
+  const W=Math.max(300,data.length*70),H=h,pad=30,bw=14,gap=(W-pad*2-(bw*2+4)*data.length)/(data.length+1);
+  const mx=Math.max(...data.map(d=>Math.max(parseFloat(d.v1)||0,parseFloat(d.v2)||0)),1);
+  let bars='',labels='';
+  data.forEach((d,i)=>{
+    const x=pad+gap*(i+1)+(bw*2+4)*i;
+    const v1=parseFloat(d.v1)||0,v2=parseFloat(d.v2)||0;
+    const h1=Math.round((v1/mx)*(H-50)),h2=Math.round((v2/mx)*(H-50));
+    bars+=`<rect x="${x}" y="${H-20-h1}" width="${bw}" height="${h1}" fill="${c1}" rx="3"/>`;
+    bars+=`<rect x="${x+bw+4}" y="${H-20-h2}" width="${bw}" height="${h2}" fill="${c2}" rx="3"/>`;
+    labels+=`<text x="${x+bw}" y="${H-4}" text-anchor="middle" fill="#64748b" font-size="10">${esc(d.l)}</text>`;
+  });
+  const legend=`<text x="${pad}" y="14" fill="${c1}" font-size="10">■ ${l1}</text><text x="${pad+80}" y="14" fill="${c2}" font-size="10">■ ${l2}</text>`;
+  return `<svg width="${W}" height="${H}" style="display:block">${legend}${bars}${labels}</svg>`;
+}
+
+function getLast7(){
+  const res=[];
+  for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().split('T')[0];res.push({key:k,...emptyDay(),...(allData[k]||{})});}
+  return res;
+}
+
+function getChartData(){
+  if(analyticsView==='weekly'){
+    const weeks=[];
+    for(let w=3;w>=0;w--){
+      const days=[];
+      for(let d=6;d>=0;d--){const date=new Date();date.setDate(date.getDate()-w*7-d);const k=date.toISOString().split('T')[0];days.push({...emptyDay(),...(allData[k]||{})});}
+      weeks.push({
+        l:`W${4-w}`,
+        expense:Math.round(days.reduce((s,d)=>s+(parseFloat(d.expense)||0),0)),
+        study:+(days.reduce((s,d)=>s+(parseFloat(d.studyHours)||0),0)).toFixed(1),
+        workout:+(days.reduce((s,d)=>s+(parseFloat(d.workoutHours)||0),0)).toFixed(1),
+        sleep:+(days.reduce((s,d)=>s+(parseFloat(d.sleepHours)||0),0)/7).toFixed(1),
+        mood:+(days.reduce((s,d)=>s+(d.mood||3),0)/7).toFixed(1),
+        screenTime:+(days.reduce((s,d)=>s+(parseFloat(d.screenTime)||0),0)/7).toFixed(1),
+      });
+    }
+    return weeks;
+  } else {
+    const months=[];
+    for(let m=5;m>=0;m--){
+      const date=new Date();date.setMonth(date.getMonth()-m);
+      const year=date.getFullYear(),month=date.getMonth();
+      const label=date.toLocaleString('default',{month:'short'});
+      const dim=new Date(year,month+1,0).getDate();
+      let expense=0,study=0,workout=0,sleep=0,mood=0,screenTime=0,count=0;
+      for(let d=1;d<=dim;d++){
+        const k=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        if(allData[k]){expense+=parseFloat(allData[k].expense)||0;study+=parseFloat(allData[k].studyHours)||0;workout+=parseFloat(allData[k].workoutHours)||0;sleep+=parseFloat(allData[k].sleepHours)||0;mood+=allData[k].mood||3;screenTime+=parseFloat(allData[k].screenTime)||0;count++;}
+      }
+      months.push({l:label,expense:Math.round(expense),study:Math.round(study),workout:Math.round(workout),sleep:count?+(sleep/count).toFixed(1):0,mood:count?+(mood/count).toFixed(1):0,screenTime:count?+(screenTime/count).toFixed(1):0});
+    }
+    return months;
+  }
+}
+
+function setAnalyticsView(v){
+  analyticsView=v;
+  document.getElementById('btnWeekly').classList.toggle('active',v==='weekly');
+  document.getElementById('btnMonthly').classList.toggle('active',v==='monthly');
+  renderCharts();
+}
+
+function renderCharts(){
+  const d=getChartData();
+  document.getElementById('chartExpense').innerHTML=makeSVGBar(d.map(x=>({l:x.l,v:x.expense})),'#f59e0b');
+  document.getElementById('chartStudy').innerHTML=makeSVGDoubleBar(d.map(x=>({l:x.l,v1:x.study,v2:x.workout})),'#6366f1','#22d3ee','Padhai','Workout');
+  document.getElementById('chartSleep').innerHTML=makeSVGLine(d.map(x=>({l:x.l,v:x.sleep})),'#a78bfa',150,0,10);
+  document.getElementById('chartMood').innerHTML=makeSVGLine(d.map(x=>({l:x.l,v:x.mood})),'#f472b6',150,1,5);
+  document.getElementById('chartScreen').innerHTML=makeSVGBar(d.map(x=>({l:x.l,v:x.screenTime})),'#f43f5e',160,12);
+}
+
+function renderStats(){
+  const last7=getLast7();
+  const totalExp=last7.reduce((s,d)=>s+(parseFloat(d.expense)||0),0);
+  const totalStudy=last7.reduce((s,d)=>s+(parseFloat(d.studyHours)||0),0);
+  const totalWork=last7.reduce((s,d)=>s+(parseFloat(d.workoutHours)||0),0);
+  const avgMood=(last7.reduce((s,d)=>s+(d.mood||3),0)/7).toFixed(1);
+  const avgScreen=(last7.reduce((s,d)=>s+(parseFloat(d.screenTime)||0),0)/7).toFixed(1);
+  document.getElementById('statsGrid').innerHTML=[
+    {icon:'💸',label:'7 din kharcha',value:'₹'+Math.round(totalExp)},
+    {icon:'📚',label:'7 din padhai',value:totalStudy.toFixed(1)+'h'},
+    {icon:'💪',label:'7 din workout',value:totalWork.toFixed(1)+'h'},
+    {icon:'😊',label:'Avg mood',value:avgMood+'/5'},
+    {icon:'📱',label:'Avg screen',value:avgScreen+'h/day'},
+  ].map(s=>`<div class="stat-card"><div class="stat-icon">${s.icon}</div><div class="stat-value">${s.value}</div><div class="stat-label">${s.label}</div></div>`).join('');
+}
+
+function renderStreak(){
+  let streak=0;
+  for(let i=0;i<365;i++){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const k=d.toISOString().split('T')[0],day=allData[k];
+    if(day&&(day.expense||day.studyHours||day.workoutHours||day.sleepHours))streak++;
+    else break;
+  }
+  document.getElementById('streakCard').innerHTML=`<div style="font-size:34px">🔥</div>
+    <div style="font-size:30px;font-weight:800;color:#f59e0b">${streak}</div>
+    <div style="font-size:13px;color:#94a3b8">${streak>0?'din ki streak — zabardast!':'Aaj se shuru karo!'}</div>`;
+}
+
+function renderAnalytics(){renderStats();renderCharts();renderStreak();}
+
+// INIT
+allData=loadAll();
+const tk=getTodayKey();
+document.getElementById('viewDate').value=tk;
+document.getElementById('viewDate').max=tk;
+renderTodayTab();
+</script>
+</body>
+</html>
